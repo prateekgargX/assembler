@@ -1,9 +1,16 @@
 import re
 import time
-start_time = time.time()
+import argparse
 
-filename = "my_program.txt"
-outfile = "a.txt"
+
+parser = argparse.ArgumentParser(prog='assembler',
+                                 description='convert little architecture asm to binary',
+                                 epilog='primarily made to be used for vhdl projects')
+
+parser.add_argument('inputfile', metavar='inputfile', type=str,help='input file path')
+parser.add_argument('-o',help='output file name,defaults to a.txt',default="a.txt")
+
+args = parser.parse_args()
 
 opcode = {
 "ADD" : "0001","ADC" : "0001",
@@ -20,7 +27,22 @@ opcode = {
 NumReg = 8
 logNumReg = 3
 
-with open(filename) as file: lines = file.readlines()
+def fstr2int(s): # function to handle multiple string formats
+    if   s[-1] == 'B' : return int(s[:-1],2)
+    elif s[-1] == 'H' : return int(s[:-1],16)
+    elif s[-1] == 'D' : return int(s[:-1],10)
+    return int(s)
+
+start_time = time.time()
+
+filename = args.inputfile
+outfile = args.o
+
+try:
+    with open(filename) as file: lines = file.readlines()
+except:
+    print ("Error: Invalid file {}".format(filename))
+    quit()
 
 with open(outfile,'w') as out:
     i = 1 # to keep track of current line being processed
@@ -32,17 +54,15 @@ with open(outfile,'w') as out:
             opcode_s = opcode.get(asm_split[0]) 
 
             if opcode_s == None : #-----check for validity------#
-                print ("SyntaxError: ""line-"+str(i)+" \""+asm_split[0]+"\": Not a valid instruction")
+                print ("SyntaxError in line-{} \"{}\": Not a valid instruction".format(i,asm_split[0]))
                 quit()
 
             instr = opcode_s
             
             if(opcode_s == "0001" or opcode_s == "0010"): 
-                # R-type Instruction
-                # print(asm_split[1][0],asm_split[2][0],asm_split[3][0])
                 #-----Syntax Error and check for validity for regNum------#
-                # if(asm_split[1][0] == "R" and asm_split[2][0] == "R" and asm_split[3][0] == "R") :  raise Exception(str(i)+" :A custom message as to why you raised this.")
                 try:
+                    if not(asm_split[1][0] == 'R' and asm_split[2][0] == 'R'and asm_split[3][0] == 'R') :  raise NameError
                     C = int(asm_split[1][1:])
                     A = int(asm_split[2][1:])
                     B = int(asm_split[3][1:])
@@ -51,7 +71,10 @@ with open(outfile,'w') as out:
                     RA = f'{A:03b}'
                     RB = f'{B:03b}'
                 except ValueError:
-                    print("line-"+str(i)+" :0-7 are only valid registers")
+                    print("KeyError in line-{} :0-7 are only valid registers".format(i))
+                    quit()
+                except NameError:
+                    print("SyntaxError in line-{} : Invalid Register Name".format(i))
                     quit()
 
                 CZ = "00"
@@ -65,26 +88,37 @@ with open(outfile,'w') as out:
                 # I-type Instruction
                 
                 try: #-----Syntax Error and check for validity for regNum------#
+                    if not(asm_split[1][0] == 'R' and asm_split[2][0] == 'R') :  raise NameError
                     A = int(asm_split[1][1:])
                     B = int(asm_split[2][1:])
                     if not(B<NumReg and A<NumReg) :raise ValueError
                     RA   = f'{A:03b}'
                     RB   = f'{B:03b}'
                 except ValueError:
-                    print("line-"+str(i)+" :0-7 are only valid registers")
+                    print("KeyError in line-{} :0-7 are only valid registers".format(i))
+                    quit()
+                except NameError:
+                    print("SyntaxError in line-{} : Invalid Register Name".format(i))
                     quit()
 
                 if opcode_s == "0000": RA,RB = RB,RA
                 if opcode_s != "1010":
                     try: 
-                        imm = int(asm_split[3][1:])
+                        if not(asm_split[3][0] == '#') :  raise NameError
+                        try:
+                            imm = fstr2int(asm_split[3][1:])
+                        except:
+                            print("SyntaxError in line-{} : Invalid format specifier".format(i))
+                            quit()
                         if not(imm<pow(2,6)) :raise ValueError
-                        IMM6 = f'{imm:09b}'#-----Value Error and formatting error----
+                        IMM6 = f'{imm:06b}'#----formatting error----
                     except ValueError:
-                        print("line-"+str(i)+" :0-7 are only valid registers")
+                        print("ValueError in line-{} :00h-3fh are only valid values".format(i))
                         quit()
-
-                    IMM6 = f'{imm:06b}'#-----Value Error and formatting error----
+                    except NameError:
+                        print("SyntaxError in line-{} : Invalid constant specifier".format(i))
+                        quit()
+                    IMM6 = f'{imm:06b}'#---formatting error----
                 else : IMM6 = f'{0:06b}'
                 instr+=RA+RB+IMM6
 
@@ -92,21 +126,33 @@ with open(outfile,'w') as out:
                 # J-type Instruction
 
                 try: #-----Syntax Error --------
+                    if not(asm_split[1][0] == 'R') :  raise NameError
                     A = int(asm_split[1][1:])
                     if not(B<NumReg and A<NumReg) :raise ValueError
                     RA   = f'{A:03b}'
                 except ValueError:
-                    print("line-"+str(i)+" :0-7 are only valid registers")
+                    print("KeyError in line-{} :0-7 are only valid registers".format(i))
+                    quit()
+                except NameError:
+                    print("SyntaxError in line-{} : Invalid Register Name".format(i))
                     quit()
 
                 try: 
-                    imm = int(asm_split[2][1:])
+                    imm = fstr2int(asm_split[2][1:])
+                    try:
+                        imm = fstr2int(asm_split[2][1:])
+                    except:
+                        print("SyntaxError in line-{} : Invalid format specifier".format(i))
+                        quit()
                     if not(imm<pow(2,9)) :raise ValueError
                     IMM9 = f'{imm:09b}'#-----Value Error and formatting error----
                 except ValueError:
-                    print("line-"+str(i)+" :0-7 are only valid registers")
+                    print("ValueError in line-{} :000h-1ffh are only valid values".format(i))
                     quit()
-                
+                except NameError:
+                    print("SyntaxError in line-{} : Invalid constant specifier".format(i))
+                    quit()
+            
                 instr+=RA+IMM9
 
             out.write(instr+'\n')
@@ -116,8 +162,3 @@ with open(outfile,'w') as out:
 
 print("Execution finished in {:.4f} seconds".format(time.time()-start_time))
 print("Total instructions : {}".format(j-1))
-
-
-# R match, # match
-# argparse
-# function to handle different types of stuff b,d,h
