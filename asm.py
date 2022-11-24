@@ -4,7 +4,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(prog='assembler',
-                                 description='convert little architecture asm to binary',
+                                 description='create binary from asm',
                                  epilog='primarily made to be used for vhdl projects')
 
 parser.add_argument('inputfile', metavar='inputfile', type=str,help='input file path')
