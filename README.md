@@ -4,7 +4,7 @@ a utility to create binary from asm.
 
 - One instruction or label per line.
 - Blank lines are ignored.
-- Comments start with a "*" as the first character and all subsequent characters on the line are ignored.
+- Comments start with a '*' as the first character and all subsequent characters on the line are ignored.
 - Spaces and  commas delimit instruction elements.
 - All immediate values are to be specified using '#' character, optionally format can also be specified. Valid formats are binary(b), hex(h), decimal(d). By default decimal is assumed.
 <!-- 
