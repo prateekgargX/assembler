@@ -48,16 +48,6 @@ creates out.txt in the same directory.
 
 Language definition:
 
-LOAD D A   - load from address A to destination D
-LOADA D A  - load using the address register from address A + RE to destination D
-STORE S A  - store value in S to address A
-STOREA S A - store using the address register the value in S to address A + RE
-BRA L      - branch to label A
-BRAZ L     - branch to label A if the CR zero flag is set
-BRAN L     - branch to label L if the CR negative flag is set
-BRAO L     - branch to label L if the CR overflow flag is set
-BRAC L     - branch to label L if the CR carry flag is set
-
 ADD RC RA RB  - execute RC <= RA + RB
 ADC RC RA RB  - execute RC <= RA + RB if carry
 ADZ RC RA RB  - execute RC <= RA + RB if Zero
@@ -82,10 +72,8 @@ JLR RA RB     - RA <= PC+1,branch to addr in RB
 JRI RA I9     - branch to RA+I6
 ```
 
-```
-LM/SM:
+**LM/SM**:
 Load(Store) multiple registers whose address is given in the immediate field (one bit per register, R0 to R7) in order from right to left, i.e, registers from R0 to R7 if corresponding bit is set. Memory address is given in reg A. Registers are loaded from (are stored to) consecutiveaddresses.
-```
 
 > **Note** assember can detect many syntax errors but they aren't guaranteed to be exhaustive.
 
