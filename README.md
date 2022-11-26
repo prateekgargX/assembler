@@ -75,5 +75,5 @@ JRI RA I9     - branch to RA+I6
 **LM/SM**:
 Load(Store) multiple registers whose address is given in the immediate field (one bit per register, R0 to R7) in order from right to left, i.e, registers from R0 to R7 if corresponding bit is set. Memory address is given in reg A. Registers are loaded from (are stored to) consecutive addresses.
 
-> **Note** assember can detect many syntax errors but they aren't guaranteed to be exhaustive.
+> **Note** assember can detect quite a few syntax errors but they aren't guaranteed to be exhaustive.
 
