@@ -78,3 +78,8 @@ Load(Store) multiple registers whose address is given in the immediate field (on
 
 > **Note** assember can detect quite a few syntax errors but they aren't guaranteed to be exhaustive.
 
+### Potential Upgrades:
+
+- Right now it's a very messy code. We want to clean it up and remove redundancies
+- support for labels
+- include a command line flag to get various output formats
