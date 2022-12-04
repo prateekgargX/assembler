@@ -9,6 +9,8 @@ parser = argparse.ArgumentParser(prog='assembler',
 
 parser.add_argument('inputfile', metavar='inputfile', type=str,help='input file path')
 parser.add_argument('-o',help='output file name,defaults to a.txt',default="a.txt")
+parser.add_argument('-f',help='file format,defaults to hex',choices =['bin','hex'], default="hex")
+
 
 args = parser.parse_args()
 
@@ -37,6 +39,7 @@ start_time = time.time()
 
 filename = args.inputfile
 outfile = args.o
+file_format = args.f
 
 try:
     with open(filename) as file: lines = file.readlines()
@@ -155,7 +158,9 @@ with open(outfile,'w') as out:
             
                 instr+=RA+IMM9
 
-            out.write(instr+'\n')
+            if file_format=="bin" : out.write(instr+'\n')
+            elif file_format=="hex": out.write("x\"{0:0>4X}\"\n".format(int(instr,2))) # format as hex string and then write to the file
+
             j+=1
     
         i+=1
