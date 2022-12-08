@@ -14,10 +14,11 @@ parser.add_argument('-f',help='file format,defaults to hex',choices =['bin','hex
 
 args = parser.parse_args()
 
+# Note that encoding for ADI and LHI are changed from specifications
 opcode = {
 "ADD" : "0001","ADC" : "0001",
 "ADZ" : "0001","ADL" : "0001",
-"ADI" : "0000","NDU" : "0010",
+"ADI" : "1111","NDU" : "0010",
 "NDC" : "0010","NDZ" : "0010",
 "LHI" : "0011",
 "LW"  : "0111","SW"  : "0101",
